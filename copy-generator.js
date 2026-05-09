@@ -1,6 +1,7 @@
 // copy-generator.js
 // Genera el copy para posts de VitalPlus Salud usando Claude API
 
+const fetch = require('node-fetch');
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 // ─── Calendario de fechas importantes Colombia ───────────────────────────────
