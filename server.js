@@ -104,6 +104,6 @@ app.get('/preview', async (req, res) => {
   );
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Vitalplus Image Service corriendo en puerto ${PORT}`);
 });
