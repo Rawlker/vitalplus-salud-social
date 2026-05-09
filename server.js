@@ -4,7 +4,12 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(express.json());
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 const PORT = process.env.PORT || 3000;
 const TEMPLATES = ['plantilla-a', 'plantilla-b', 'plantilla-c'];
