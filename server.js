@@ -150,8 +150,7 @@ app.post('/generate-post', async (req, res) => {
 
     const screenshot = await page.screenshot({
       clip: { x: 0, y: 0, width: 1080, height: 1080 },
-      type: 'png',
-      encoding: 'base64'
+      type: 'png'
     });
 
     await browser.close();
@@ -160,7 +159,7 @@ app.post('/generate-post', async (req, res) => {
     res.json({
       copy,
       plantilla: templateName,
-      imagen_base64: screenshot
+      imagen_base64: screenshot.toString('base64')
     });
 
   } catch (err) {
