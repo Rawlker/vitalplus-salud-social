@@ -111,6 +111,7 @@ Responde ÚNICAMENTE con un objeto JSON con esta estructura exacta (sin backtick
   });
 
   const data = await response.json();
+  console.log('Claude API response:', JSON.stringify(data));
   const text = data.content[0].text.trim();
 
   // Limpiar posibles backticks
