@@ -2,10 +2,13 @@ const express = require('express');
 const { chromium } = require('playwright-core');
 const path = require('path');
 const fs = require('fs');
+const { generarCopy } = require('./copy-generator');
 
 const app = express();
 app.set('trust proxy', 1);
 app.use(express.json());
+
+// Permitir cualquier host (Railway proxy)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   next();
@@ -104,6 +107,64 @@ app.get('/preview', async (req, res) => {
   );
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`✅ Vitalplus Image Service corriendo en puerto ${PORT}`);
+});
+
+// Endpoint completo: genera copy + imagen en un solo llamado
+app.post('/generate-post', async (req, res) => {
+  try {
+    // 1. Generar copy con Claude
+    const copy = await generarCopy();
+
+    // 2. Generar imagen con el copy
+    const templateName = copy.es_fecha_especial ? 'plantilla-b' :
+      ['plantilla-a', 'plantilla-c'][Math.floor(Math.random() * 2)];
+
+    const templatePath = path.join(__dirname, 'templates', `${templateName}.html`);
+    let html = fs.readFileSync(templatePath, 'utf-8');
+
+    const injection = `
+      <script>
+        window.addEventListener('DOMContentLoaded', () => {
+          const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.innerHTML = val; };
+          set('tag', ${JSON.stringify(copy.tag)});
+          set('titulo', ${JSON.stringify(copy.titulo)});
+          set('cuerpo', ${JSON.stringify(copy.cuerpo)});
+          set('cta', ${JSON.stringify(copy.cta)});
+          set('fecha', ${JSON.stringify(new Date().toLocaleDateString('es-CO', { month: 'long', year: 'numeric' }))});
+        });
+      </script>
+    `;
+    html = html.replace('</body>', `${injection}</body>`);
+
+    let browser;
+    browser = await chromium.launch({
+      executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    });
+
+    const page = await browser.newPage({ viewport: { width: 1080, height: 1080 } });
+    await page.setContent(html, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(1500);
+
+    const screenshot = await page.screenshot({
+      clip: { x: 0, y: 0, width: 1080, height: 1080 },
+      type: 'png',
+      encoding: 'base64'
+    });
+
+    await browser.close();
+
+    // 3. Devolver copy + imagen en base64
+    res.json({
+      copy,
+      plantilla: templateName,
+      imagen_base64: screenshot
+    });
+
+  } catch (err) {
+    console.error('Error en generate-post:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
