@@ -111,44 +111,46 @@ app.listen(PORT, () => {
   console.log(`✅ Vitalplus Image Service corriendo en puerto ${PORT}`);
 });
 
-// ─── Buscar imagen en Unsplash ────────────────────────────────────────────────
-async function buscarImagenUnsplash(keywords) {
-  const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY;
+// ─── Buscar imagen en Pexels ──────────────────────────────────────────────────
+async function buscarImagenPexels(keywords) {
+  const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
 
-  if (!UNSPLASH_ACCESS_KEY) {
-    console.warn('⚠️ UNSPLASH_ACCESS_KEY no configurada');
+  if (!PEXELS_API_KEY) {
+    console.warn('⚠️ PEXELS_API_KEY no configurada, usando imagen por defecto');
     return null;
   }
 
   try {
-    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(keywords)}&orientation=squarish&per_page=5`;
+    // Buscar 5 fotos y elegir una al azar para variedad
+    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(keywords)}&orientation=square&per_page=5`;
     const response = await fetch(url, {
-      headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` }
+      headers: { Authorization: PEXELS_API_KEY }
     });
 
     if (!response.ok) {
-      console.error('Unsplash API error:', response.status);
+      console.error('Pexels API error:', response.status);
       return null;
     }
 
     const data = await response.json();
 
-    if (!data.results || data.results.length === 0) {
-      console.warn('Unsplash no devolvió fotos para:', keywords);
+    if (!data.photos || data.photos.length === 0) {
+      console.warn('Pexels no devolvió fotos para:', keywords);
       return null;
     }
 
     // Foto aleatoria entre los resultados
-    const foto = data.results[Math.floor(Math.random() * data.results.length)];
+    const foto = data.photos[Math.floor(Math.random() * data.photos.length)];
 
+    // URL cuadrada 800x800, perfecta para posts 1080x1080
     return {
-      url: foto.urls.regular,
-      photographer: foto.user.name,
-      unsplash_page: foto.links.html
+      url: foto.src.large2x || foto.src.large,
+      photographer: foto.photographer,
+      pexels_page: foto.url
     };
 
   } catch (err) {
-    console.error('Error buscando imagen en Unsplash:', err.message);
+    console.error('Error buscando imagen en Pexels:', err.message);
     return null;
   }
 }
@@ -159,10 +161,10 @@ app.post('/generate-post', async (req, res) => {
     // 1. Generar copy con Claude (incluye pexels_keywords)
     const copy = await generarCopy();
 
-    // 2. Buscar imagen en Unsplash con las keywords generadas por Claude
+    // 2. Buscar imagen en Pexels con las keywords generadas por Claude
     const keywords = copy.pexels_keywords || 'happy family health colombia';
-    const pexelsImage = await buscarImagenUnsplash(keywords);
-    console.log('Unsplash imagen:', pexelsImage ? pexelsImage.url : 'no encontrada, sin imagen');
+    const pexelsImage = await buscarImagenPexels(keywords);
+    console.log('Pexels imagen:', pexelsImage ? pexelsImage.url : 'no encontrada, sin imagen');
 
     // 3. Elegir plantilla
     const templateName = copy.es_fecha_especial ? 'plantilla-b' :
@@ -217,7 +219,7 @@ app.post('/generate-post', async (req, res) => {
       copy,
       plantilla: templateName,
       imagen_base64: screenshot.toString('base64'),
-      unsplash: pexelsImage || null
+      pexels: pexelsImage || null
     });
 
   } catch (err) {
