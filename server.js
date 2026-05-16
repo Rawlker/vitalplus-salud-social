@@ -111,19 +111,67 @@ app.listen(PORT, () => {
   console.log(`✅ Vitalplus Image Service corriendo en puerto ${PORT}`);
 });
 
+// ─── Buscar imagen en Unsplash ────────────────────────────────────────────────
+async function buscarImagenUnsplash(keywords) {
+  const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY;
+
+  if (!UNSPLASH_ACCESS_KEY) {
+    console.warn('⚠️ UNSPLASH_ACCESS_KEY no configurada');
+    return null;
+  }
+
+  try {
+    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(keywords)}&orientation=squarish&per_page=5`;
+    const response = await fetch(url, {
+      headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` }
+    });
+
+    if (!response.ok) {
+      console.error('Unsplash API error:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (!data.results || data.results.length === 0) {
+      console.warn('Unsplash no devolvió fotos para:', keywords);
+      return null;
+    }
+
+    // Foto aleatoria entre los resultados
+    const foto = data.results[Math.floor(Math.random() * data.results.length)];
+
+    return {
+      url: foto.urls.regular,
+      photographer: foto.user.name,
+      unsplash_page: foto.links.html
+    };
+
+  } catch (err) {
+    console.error('Error buscando imagen en Unsplash:', err.message);
+    return null;
+  }
+}
+
 // Endpoint completo: genera copy + imagen en un solo llamado
 app.post('/generate-post', async (req, res) => {
   try {
-    // 1. Generar copy con Claude
+    // 1. Generar copy con Claude (incluye pexels_keywords)
     const copy = await generarCopy();
 
-    // 2. Generar imagen con el copy
+    // 2. Buscar imagen en Unsplash con las keywords generadas por Claude
+    const keywords = copy.pexels_keywords || 'happy family health colombia';
+    const pexelsImage = await buscarImagenUnsplash(keywords);
+    console.log('Unsplash imagen:', pexelsImage ? pexelsImage.url : 'no encontrada, sin imagen');
+
+    // 3. Elegir plantilla
     const templateName = copy.es_fecha_especial ? 'plantilla-b' :
       ['plantilla-a', 'plantilla-c'][Math.floor(Math.random() * 2)];
 
     const templatePath = path.join(__dirname, 'templates', `${templateName}.html`);
     let html = fs.readFileSync(templatePath, 'utf-8');
 
+    // 4. Inyectar copy + imagen de Pexels en el template
     const injection = `
       <script>
         window.addEventListener('DOMContentLoaded', () => {
@@ -133,6 +181,15 @@ app.post('/generate-post', async (req, res) => {
           set('cuerpo', ${JSON.stringify(copy.cuerpo)});
           set('cta', ${JSON.stringify(copy.cta)});
           set('fecha', ${JSON.stringify(new Date().toLocaleDateString('es-CO', { month: 'long', year: 'numeric' }))});
+
+          // Insertar imagen de Pexels si existe
+          ${pexelsImage ? `
+          const imgEl = document.getElementById('pexels-img');
+          if (imgEl) {
+            imgEl.src = ${JSON.stringify(pexelsImage.url)};
+            imgEl.style.display = 'block';
+          }
+          ` : ''}
         });
       </script>
     `;
@@ -155,11 +212,12 @@ app.post('/generate-post', async (req, res) => {
 
     await browser.close();
 
-    // 3. Devolver copy + imagen en base64
+    // 5. Devolver copy + imagen en base64
     res.json({
       copy,
       plantilla: templateName,
-      imagen_base64: screenshot.toString('base64')
+      imagen_base64: screenshot.toString('base64'),
+      unsplash: pexelsImage || null
     });
 
   } catch (err) {
