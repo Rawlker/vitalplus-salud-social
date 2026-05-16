@@ -25,6 +25,24 @@
     overflow: hidden;
   }
 
+  /* Foto Pexels - mitad derecha */
+  .pexels-wrap {
+    position: absolute;
+    top: 0; right: 0;
+    width: 480px; height: 1080px;
+    overflow: hidden;
+  }
+  #pexels-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: none;
+  }
+  .pexels-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, #0b2133 0%, rgba(11,33,51,0.55) 60%, rgba(11,33,51,0.2) 100%);
+  }
+
   /* Decoración de fondo */
   .orb1 {
     position: absolute;
@@ -155,6 +173,10 @@
 </head>
 <body>
 <div class="post">
+  <div class="pexels-wrap">
+    <img id="pexels-img" src="" alt="" />
+    <div class="pexels-overlay"></div>
+  </div>
   <div class="orb1"></div>
   <div class="orb2"></div>
   <div class="orb3"></div>

@@ -24,6 +24,17 @@
     font-family: 'Outfit', sans-serif;
   }
 
+  /* Foto Pexels - fondo completo */
+  #pexels-img {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: none;
+    opacity: 0.18;
+    mix-blend-mode: luminosity;
+  }
+
   /* Decoración */
   .orb1 {
     position: absolute;
@@ -145,6 +156,7 @@
 </head>
 <body>
 <div class="post">
+  <img id="pexels-img" src="" alt="" />
   <div class="orb1"></div>
   <div class="orb2"></div>
   <div class="orb3"></div>
