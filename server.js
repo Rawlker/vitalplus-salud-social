@@ -22,6 +22,62 @@ app.get('/', (req, res) => {
   res.json({ status: 'ok', service: 'Vitalplus Image Service' });
 });
 
+// ─── Subir imagen a Cloudinary ────────────────────────────────────────────────
+async function subirACloudinary(base64Image) {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    console.warn('⚠️ Cloudinary no configurado');
+    return null;
+  }
+
+  try {
+    const timestamp = Math.round(Date.now() / 1000);
+    const folder = 'vitalplus';
+
+    // Generar firma
+    const crypto = require('crypto');
+    const signString = `folder=${folder}&timestamp=${timestamp}${apiSecret}`;
+    const signature = crypto.createHash('sha1').update(signString).digest('hex');
+
+    // Preparar form data
+    const formData = new URLSearchParams();
+    formData.append('file', `data:image/png;base64,${base64Image}`);
+    formData.append('api_key', apiKey);
+    formData.append('timestamp', timestamp.toString());
+    formData.append('signature', signature);
+    formData.append('folder', folder);
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      {
+        method: 'POST',
+        body: formData
+      }
+    );
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('Cloudinary error:', err);
+      return null;
+    }
+
+    const data = await response.json();
+    return data.secure_url;
+
+  } catch (err) {
+    console.error('Error subiendo a Cloudinary:', err.message);
+    return null;
+  }
+}
+
+// Health check
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', service: 'Vitalplus Image Service' });
+});
+
 // Endpoint principal: genera imagen PNG
 app.post('/generate', async (req, res) => {
   const {
@@ -214,11 +270,17 @@ app.post('/generate-post', async (req, res) => {
 
     await browser.close();
 
-    // 5. Devolver copy + imagen en base64
+    // 5. Subir imagen a Cloudinary y obtener URL pública
+    const base64 = screenshot.toString('base64');
+    const imagenUrl = await subirACloudinary(base64);
+    console.log('Cloudinary URL:', imagenUrl || 'no disponible, usando base64');
+
+    // 6. Devolver copy + imagen
     res.json({
       copy,
       plantilla: templateName,
-      imagen_base64: screenshot.toString('base64'),
+      imagen_base64: base64,
+      imagen_url: imagenUrl || null,
       pexels: pexelsImage || null
     });
 
