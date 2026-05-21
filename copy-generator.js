@@ -49,6 +49,18 @@ const TEMAS_SALUD = [
   "Salud visual: cuándo ir al oftalmólogo",
   "Salud oral y su conexión con la salud general",
   "Por qué tener un médico de cabecera cambia tu calidad de vida",
+
+  // Temas educativos / comparativos
+  "Qué NO cubre una medicina prepagada y por qué es importante saberlo",
+  "3 errores comunes al comprar una póliza o plan de salud en Colombia",
+  "EPS vs medicina prepagada: ¿cuál es la diferencia real?",
+  "Qué pasa si te enfermas en Colombia sin medicina prepagada",
+  "¿Vale la pena pagar una medicina prepagada si ya tienes EPS?",
+  "Cuánto tiempo tarda en atenderte una EPS vs una prepagada",
+  "Qué especialistas están cubiertos en MedPlus y cuáles no",
+  "Los 5 errores que la gente comete al elegir un plan de salud",
+  "Por qué la sala de urgencias de tu clínica importa tanto como el médico",
+  "Qué revisar en la letra pequeña antes de firmar un plan de salud",
 ];
 
 // ─── Detectar fecha importante esta semana ───────────────────────────────────
@@ -94,7 +106,8 @@ Responde ÚNICAMENTE con un objeto JSON con esta estructura exacta (sin backtick
   "cuerpo": "2 oraciones máximo, máximo 180 caracteres total",
   "cta": "llamado a la acción de máximo 4 palabras",
   "tema": "${tema}",
-  "es_fecha_especial": ${esFechaEspecial}
+  "es_fecha_especial": ${esFechaEspecial},
+  "pexels_keywords": "2-4 palabras en inglés para buscar una foto relevante en Pexels, ej: happy family doctor colombia"
 }`;
 
   const response = await fetch("https://api.anthropic.com/v1/messages", {
