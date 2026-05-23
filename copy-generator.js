@@ -27,41 +27,56 @@ const FECHAS_IMPORTANTES = [
   { mes: 12, dia: 31, nombre: "Fin de Año" },
 ];
 
-// ─── Banco de temas de salud ─────────────────────────────────────────────────
-const TEMAS_SALUD = [
-  "Importancia de los chequeos médicos preventivos anuales",
-  "Beneficios de la medicina prepagada vs. el sistema público",
-  "Cómo elegir el plan de salud ideal para tu familia",
-  "La importancia de la salud mental y cómo cuidarla",
-  "Alimentación saludable y su impacto en la salud a largo plazo",
-  "Ejercicio físico: cuánto es suficiente para mantenerse sano",
-  "Señales de alerta que no debes ignorar y consultar con tu médico",
-  "Cómo prepararse para una cita médica y aprovecharla al máximo",
-  "Salud cardiovascular: hábitos para cuidar tu corazón",
-  "La importancia de vacunarse en todas las etapas de la vida",
-  "Manejo del estrés y su relación con la salud física",
-  "Sueño y salud: por qué dormir bien es fundamental",
-  "Salud infantil: controles y cuidados para los más pequeños",
-  "Salud en el adulto mayor: cómo mantener la calidad de vida",
-  "Hidratación: por qué tomar suficiente agua es vital",
-  "Cómo MedPlus Medicina Prepagada facilita el acceso a especialistas",
-  "Diferencia entre urgencias y emergencias médicas",
-  "Salud visual: cuándo ir al oftalmólogo",
-  "Salud oral y su conexión con la salud general",
-  "Por qué tener un médico de cabecera cambia tu calidad de vida",
+// ─── Banco de temas con categoría ────────────────────────────────────────────
+// Categorías:
+//   educativa  → Plantilla C (blanca, fresca) — hábitos y salud preventiva
+//   comparativa → Plantilla A (oscura, impactante) — EPS vs prepagada, valor
+//   especial    → Plantilla B (vibrante) — fechas especiales y temas emocionales
 
-  // Temas educativos / comparativos
-  "Qué NO cubre una medicina prepagada y por qué es importante saberlo",
-  "3 errores comunes al comprar una póliza o plan de salud en Colombia",
-  "EPS vs medicina prepagada: ¿cuál es la diferencia real?",
-  "Qué pasa si te enfermas en Colombia sin medicina prepagada",
-  "¿Vale la pena pagar una medicina prepagada si ya tienes EPS?",
-  "Cuánto tiempo tarda en atenderte una EPS vs una prepagada",
-  "Qué especialistas están cubiertos en MedPlus y cuáles no",
-  "Los 5 errores que la gente comete al elegir un plan de salud",
-  "Por qué la sala de urgencias de tu clínica importa tanto como el médico",
-  "Qué revisar en la letra pequeña antes de firmar un plan de salud",
+const TEMAS_SALUD = [
+  // ── Educativa / Preventiva → Plantilla C ──────────────────────────────────
+  { tema: "Importancia de los chequeos médicos preventivos anuales",           categoria: "educativa" },
+  { tema: "Cómo elegir el plan de salud ideal para tu familia",                categoria: "educativa" },
+  { tema: "Alimentación saludable y su impacto en la salud a largo plazo",     categoria: "educativa" },
+  { tema: "Ejercicio físico: cuánto es suficiente para mantenerse sano",       categoria: "educativa" },
+  { tema: "Señales de alerta que no debes ignorar y consultar con tu médico",  categoria: "educativa" },
+  { tema: "Cómo prepararse para una cita médica y aprovecharla al máximo",     categoria: "educativa" },
+  { tema: "Salud cardiovascular: hábitos para cuidar tu corazón",              categoria: "educativa" },
+  { tema: "La importancia de vacunarse en todas las etapas de la vida",        categoria: "educativa" },
+  { tema: "Manejo del estrés y su relación con la salud física",               categoria: "educativa" },
+  { tema: "Sueño y salud: por qué dormir bien es fundamental",                 categoria: "educativa" },
+  { tema: "Hidratación: por qué tomar suficiente agua es vital",               categoria: "educativa" },
+  { tema: "Cómo MedPlus Medicina Prepagada facilita el acceso a especialistas",categoria: "educativa" },
+  { tema: "Diferencia entre urgencias y emergencias médicas",                  categoria: "educativa" },
+  { tema: "Salud visual: cuándo ir al oftalmólogo",                            categoria: "educativa" },
+  { tema: "Salud oral y su conexión con la salud general",                     categoria: "educativa" },
+  { tema: "Por qué tener un médico de cabecera cambia tu calidad de vida",     categoria: "educativa" },
+
+  // ── Comparativa / Alto valor → Plantilla A ────────────────────────────────
+  { tema: "Beneficios de la medicina prepagada vs. el sistema público",        categoria: "comparativa" },
+  { tema: "Qué NO cubre una medicina prepagada y por qué es importante saberlo", categoria: "comparativa" },
+  { tema: "3 errores comunes al comprar una póliza o plan de salud en Colombia", categoria: "comparativa" },
+  { tema: "EPS vs medicina prepagada: ¿cuál es la diferencia real?",           categoria: "comparativa" },
+  { tema: "Qué pasa si te enfermas en Colombia sin medicina prepagada",        categoria: "comparativa" },
+  { tema: "¿Vale la pena pagar una medicina prepagada si ya tienes EPS?",      categoria: "comparativa" },
+  { tema: "Cuánto tiempo tarda en atenderte una EPS vs una prepagada",         categoria: "comparativa" },
+  { tema: "Qué especialistas están cubiertos en MedPlus y cuáles no",         categoria: "comparativa" },
+  { tema: "Los 5 errores que la gente comete al elegir un plan de salud",      categoria: "comparativa" },
+  { tema: "Por qué la sala de urgencias de tu clínica importa tanto como el médico", categoria: "comparativa" },
+  { tema: "Qué revisar en la letra pequeña antes de firmar un plan de salud",  categoria: "comparativa" },
+
+  // ── Especial / Emocional → Plantilla B ───────────────────────────────────
+  { tema: "La importancia de la salud mental y cómo cuidarla",                 categoria: "especial" },
+  { tema: "Salud infantil: controles y cuidados para los más pequeños",        categoria: "especial" },
+  { tema: "Salud en el adulto mayor: cómo mantener la calidad de vida",        categoria: "especial" },
 ];
+
+// ─── Mapa de categoría → plantilla ───────────────────────────────────────────
+const PLANTILLA_POR_CATEGORIA = {
+  educativa:   'plantilla-c',
+  comparativa: 'plantilla-a',
+  especial:    'plantilla-b',
+};
 
 // ─── Detectar fecha importante esta semana ───────────────────────────────────
 function getFechaImportanteEstaSemana() {
@@ -80,16 +95,28 @@ function getFechaImportanteEstaSemana() {
 // ─── Generar copy con Claude API ─────────────────────────────────────────────
 async function generarCopy() {
   const fechaImportante = getFechaImportanteEstaSemana();
-  const tema = fechaImportante
-    ? `Fecha especial: ${fechaImportante.nombre}`
-    : TEMAS_SALUD[Math.floor(Math.random() * TEMAS_SALUD.length)];
 
-  const esFechaEspecial = !!fechaImportante;
+  let temaTexto, categoria, esFechaEspecial;
+
+  if (fechaImportante) {
+    // Fecha especial → siempre plantilla B
+    temaTexto = `Fecha especial: ${fechaImportante.nombre}`;
+    categoria = 'especial';
+    esFechaEspecial = true;
+  } else {
+    // Tema aleatorio del banco
+    const seleccionado = TEMAS_SALUD[Math.floor(Math.random() * TEMAS_SALUD.length)];
+    temaTexto = seleccionado.tema;
+    categoria = seleccionado.categoria;
+    esFechaEspecial = false;
+  }
+
+  const plantilla = PLANTILLA_POR_CATEGORIA[categoria];
 
   const prompt = `Eres el community manager de VitalPlus Salud, una empresa colombiana autorizada para vender planes de MedPlus Medicina Prepagada.
 
 Tu tarea es crear el copy para una publicación de redes sociales (Facebook e Instagram) sobre el siguiente tema:
-"${tema}"
+"${temaTexto}"
 
 INSTRUCCIONES:
 - Tono: cercano, cálido, profesional pero accesible. Habla de "tú".
@@ -97,7 +124,7 @@ INSTRUCCIONES:
 - NO menciones precios ni hagas promesas específicas de cobertura.
 - Siempre menciona "MedPlus Medicina Prepagada" al menos una vez.
 - El copy debe motivar a cotizar o conocer más sobre los planes.
-${esFechaEspecial ? '- Es una fecha especial, dale un toque emotivo y celebratorio.' : '- Es contenido educativo, enfócate en dar valor e información útil.'}
+${esFechaEspecial ? '- Es una fecha especial, dale un toque emotivo y celebratorio.' : categoria === 'comparativa' ? '- Es contenido comparativo, sé directo y usa datos o contrastes para generar impacto.' : '- Es contenido educativo, enfócate en dar valor e información útil.'}
 
 Responde ÚNICAMENTE con un objeto JSON con esta estructura exacta (sin backticks ni texto adicional):
 {
@@ -105,7 +132,7 @@ Responde ÚNICAMENTE con un objeto JSON con esta estructura exacta (sin backtick
   "titulo": "título impactante de máximo 8 palabras",
   "cuerpo": "2 oraciones máximo, máximo 180 caracteres total",
   "cta": "llamado a la acción de máximo 4 palabras",
-  "tema": "${tema}",
+  "tema": "${temaTexto}",
   "es_fecha_especial": ${esFechaEspecial},
   "pexels_keywords": "2-4 palabras en inglés para buscar una foto relevante en Pexels, ej: happy family doctor colombia"
 }`;
@@ -130,7 +157,13 @@ Responde ÚNICAMENTE con un objeto JSON con esta estructura exacta (sin backtick
 
   // Limpiar posibles backticks
   const clean = text.replace(/```json|```/g, '').trim();
-  return JSON.parse(clean);
+  const copy = JSON.parse(clean);
+
+  // Agregar plantilla al objeto retornado
+  copy.plantilla = plantilla;
+  copy.categoria = categoria;
+
+  return copy;
 }
 
 module.exports = { generarCopy, getFechaImportanteEstaSemana, TEMAS_SALUD, FECHAS_IMPORTANTES };
