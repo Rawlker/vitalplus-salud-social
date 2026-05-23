@@ -125,8 +125,9 @@ app.post('/generate', async (req, res) => {
     });
 
     const page = await browser.newPage({ viewport: { width: 1080, height: 1080 } });
-    await page.setContent(html, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(1500); // esperar fuentes Google
+    await page.goto('about:blank');
+    await page.setContent(html, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(2000); // esperar fuentes Google
 
     const screenshot = await page.screenshot({
       clip: { x: 0, y: 0, width: 1080, height: 1080 },
