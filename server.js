@@ -224,8 +224,7 @@ app.post('/generate-post', async (req, res) => {
     console.log('Pexels imagen:', pexelsImage ? pexelsImage.url : 'no encontrada, sin imagen');
 
     // 3. Elegir plantilla
-    const templateName = copy.es_fecha_especial ? 'plantilla-b' :
-      ['plantilla-a', 'plantilla-c'][Math.floor(Math.random() * 2)];
+    const templateName = copy.plantilla || 'plantilla-c';
 
     const templatePath = path.join(__dirname, 'templates', `${templateName}.html`);
     let html = fs.readFileSync(templatePath, 'utf-8');
