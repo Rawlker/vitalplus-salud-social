@@ -68,7 +68,6 @@ const TEMAS_SALUD = [
   // ── Especial / Emocional → Plantilla B ───────────────────────────────────
   { tema: "La importancia de la salud mental y cómo cuidarla",                 categoria: "especial" },
   { tema: "Salud infantil: controles y cuidados para los más pequeños",        categoria: "especial" },
-  { tema: "Salud en el adulto mayor: cómo mantener la calidad de vida",        categoria: "especial" },
 ];
 
 // ─── Mapa de categoría → plantilla ───────────────────────────────────────────
