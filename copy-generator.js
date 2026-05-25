@@ -34,7 +34,7 @@ const FECHAS_IMPORTANTES = [
 //   especial    → Plantilla B (vibrante) — fechas especiales y temas emocionales
 
 const TEMAS_SALUD = [
-  // ── Educativa / Preventiva → Plantilla C ──────────────────────────────────
+  // ── Educativa / Preventiva → Plantilla B ──────────────────────────────────
   { tema: "Importancia de los chequeos médicos preventivos anuales",           categoria: "educativa" },
   { tema: "Cómo elegir el plan de salud ideal para tu familia",                categoria: "educativa" },
   { tema: "Alimentación saludable y su impacto en la salud a largo plazo",     categoria: "educativa" },
@@ -65,16 +65,14 @@ const TEMAS_SALUD = [
   { tema: "Por qué la sala de urgencias de tu clínica importa tanto como el médico", categoria: "comparativa" },
   { tema: "Qué revisar en la letra pequeña antes de firmar un plan de salud",  categoria: "comparativa" },
 
-  // ── Especial / Emocional → Plantilla B ───────────────────────────────────
-  { tema: "La importancia de la salud mental y cómo cuidarla",                 categoria: "especial" },
-  { tema: "Salud infantil: controles y cuidados para los más pequeños",        categoria: "especial" },
+  // ── Especial / Emocional → Plantilla C ───────────────────────────────────
 ];
 
 // ─── Mapa de categoría → plantilla ───────────────────────────────────────────
 const PLANTILLA_POR_CATEGORIA = {
-  educativa:   'plantilla-c',
+  educativa:   'plantilla-b',
   comparativa: 'plantilla-a',
-  especial:    'plantilla-b',
+  especial:    'plantilla-c',
 };
 
 // ─── Detectar fecha importante esta semana ───────────────────────────────────
