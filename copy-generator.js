@@ -51,6 +51,8 @@ const TEMAS_SALUD = [
   { tema: "Salud visual: cuándo ir al oftalmólogo",                            categoria: "educativa" },
   { tema: "Salud oral y su conexión con la salud general",                     categoria: "educativa" },
   { tema: "Por qué tener un médico de cabecera cambia tu calidad de vida",     categoria: "educativa" },
+  { tema: "La importancia de la salud mental y cómo cuidarla",                 categoria: "educativa" },
+  { tema: "Salud infantil: controles y cuidados para los más pequeños",        categoria: "educativa" },
 
   // ── Comparativa / Alto valor → Plantilla A ────────────────────────────────
   { tema: "Beneficios de la medicina prepagada vs. el sistema público",        categoria: "comparativa" },
