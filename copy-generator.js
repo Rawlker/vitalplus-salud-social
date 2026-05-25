@@ -29,9 +29,9 @@ const FECHAS_IMPORTANTES = [
 
 // ─── Banco de temas con categoría ────────────────────────────────────────────
 // Categorías:
-//   educativa  → Plantilla C (blanca, fresca) — hábitos y salud preventiva
 //   comparativa → Plantilla A (oscura, impactante) — EPS vs prepagada, valor
-//   especial    → Plantilla B (vibrante) — fechas especiales y temas emocionales
+//   educativa   → Plantilla B (vibrante) — hábitos y salud preventiva
+//   especial    → Plantilla C (blanca, fresca) — fechas especiales y temas emocionales
 
 const TEMAS_SALUD = [
   // ── Educativa / Preventiva → Plantilla B ──────────────────────────────────
@@ -98,7 +98,7 @@ async function generarCopy() {
   let temaTexto, categoria, esFechaEspecial;
 
   if (fechaImportante) {
-    // Fecha especial → siempre plantilla B
+    // Fecha especial → siempre plantilla C
     temaTexto = `Fecha especial: ${fechaImportante.nombre}`;
     categoria = 'especial';
     esFechaEspecial = true;
