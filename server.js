@@ -178,8 +178,8 @@ async function buscarImagenPexels(keywords) {
   }
 
   try {
-    // Buscar 5 fotos y elegir una al azar para variedad
-    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(keywords)}&orientation=square&per_page=5`;
+    // Buscar 10 fotos verticales y elegir una al azar para variedad
+    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(keywords)}&orientation=portrait&per_page=10`;
     const response = await fetch(url, {
       headers: { Authorization: PEXELS_API_KEY }
     });
@@ -199,9 +199,9 @@ async function buscarImagenPexels(keywords) {
     // Foto aleatoria entre los resultados
     const foto = data.photos[Math.floor(Math.random() * data.photos.length)];
 
-    // URL cuadrada 800x800, perfecta para posts 1080x1080
+    // Recorte vertical 800x1200, ideal para el espacio de la foto en la plantilla C
     return {
-      url: foto.src.large2x || foto.src.large,
+      url: foto.src.portrait || foto.src.large2x || foto.src.large,
       photographer: foto.photographer,
       pexels_page: foto.url
     };
