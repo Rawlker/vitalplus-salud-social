@@ -2,30 +2,10 @@
 // Genera el copy para posts de VitalPlus Salud usando Claude API
 
 const fetch = require('node-fetch');
+const { fechaEspecial, FECHAS } = require('./fechas');
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-// ─── Calendario de fechas importantes Colombia ───────────────────────────────
-const FECHAS_IMPORTANTES = [
-  { mes: 1,  dia: 1,  nombre: "Año Nuevo" },
-  { mes: 2,  dia: 14, nombre: "Día de San Valentín" },
-  { mes: 3,  dia: 8,  nombre: "Día Internacional de la Mujer" },
-  { mes: 4,  dia: 7,  nombre: "Día Mundial de la Salud" },
-  { mes: 4,  dia: 22, nombre: "Día de la Tierra" },
-  { mes: 5,  dia: 11, nombre: "Día de la Madre en Colombia" },
-  { mes: 6,  dia: 1,  nombre: "Día Mundial de los Niños" },
-  { mes: 6,  dia: 21, nombre: "Día del Padre en Colombia" },
-  { mes: 7,  dia: 20, nombre: "Día de la Independencia de Colombia" },
-  { mes: 8,  dia: 12, nombre: "Día Internacional de la Juventud" },
-  { mes: 9,  dia: 29, nombre: "Día Mundial del Corazón" },
-  { mes: 10, dia: 2,  nombre: "Día Internacional de la No Violencia" },
-  { mes: 10, dia: 10, nombre: "Día Mundial de la Salud Mental" },
-  { mes: 10, dia: 31, nombre: "Halloween" },
-  { mes: 11, dia: 14, nombre: "Día Mundial de la Diabetes" },
-  { mes: 11, dia: 17, nombre: "Día Mundial de la Enfermedad Pulmonar Obstructiva" },
-  { mes: 12, dia: 1,  nombre: "Día Mundial del SIDA" },
-  { mes: 12, dia: 25, nombre: "Navidad" },
-  { mes: 12, dia: 31, nombre: "Fin de Año" },
-];
+// El calendario de fechas ahora vive en fechas.js (con prioridades y fechas móviles).
 
 // ─── Banco de temas con categoría ────────────────────────────────────────────
 // Categorías:
@@ -77,18 +57,11 @@ const PLANTILLA_POR_CATEGORIA = {
   especial:    'plantilla-c',
 };
 
-// ─── Detectar fecha importante esta semana ───────────────────────────────────
+// ─── Fecha especial de HOY (zona Bogotá) ─────────────────────────────────────
+// Se mantiene el nombre original por si otro archivo lo importa.
+// Devuelve { nombre, angulo, prioridad } o null.
 function getFechaImportanteEstaSemana() {
-  const hoy = new Date();
-  for (let i = 0; i < 7; i++) {
-    const fecha = new Date(hoy);
-    fecha.setDate(hoy.getDate() + i);
-    const mes = fecha.getMonth() + 1;
-    const dia = fecha.getDate();
-    const encontrada = FECHAS_IMPORTANTES.find(f => f.mes === mes && f.dia === dia);
-    if (encontrada) return encontrada;
-  }
-  return null;
+  return fechaEspecial();
 }
 
 // ─── Generar copy con Claude API ─────────────────────────────────────────────
@@ -98,7 +71,7 @@ async function generarCopy() {
   let temaTexto, categoria, esFechaEspecial;
 
   if (fechaImportante) {
-    // Fecha especial → siempre plantilla C
+    // Fecha especial de hoy → siempre plantilla C
     temaTexto = `Fecha especial: ${fechaImportante.nombre}`;
     categoria = 'especial';
     esFechaEspecial = true;
@@ -112,6 +85,19 @@ async function generarCopy() {
 
   const plantilla = PLANTILLA_POR_CATEGORIA[categoria];
 
+  // Instrucción de tono según el tipo de contenido
+  let instruccionTipo;
+  if (esFechaEspecial) {
+    const base = fechaImportante.prioridad === 1
+      ? '- Es una fecha de salud: tono informativo, empático y esperanzador, sin dramatismo ni miedo. No uses tono festivo.'
+      : '- Es una fecha especial, dale un toque emotivo y celebratorio.';
+    instruccionTipo = `${base}\n- Conecta la fecha con la salud usando este ángulo: ${fechaImportante.angulo}.`;
+  } else if (categoria === 'comparativa') {
+    instruccionTipo = '- Es contenido comparativo, sé directo y usa datos o contrastes para generar impacto.';
+  } else {
+    instruccionTipo = '- Es contenido educativo, enfócate en dar valor e información útil.';
+  }
+
   const prompt = `Eres el community manager de VitalPlus Salud, una empresa colombiana autorizada para vender planes de MedPlus Medicina Prepagada.
 
 Tu tarea es crear el copy para una publicación de redes sociales (Facebook e Instagram) sobre el siguiente tema:
@@ -123,7 +109,7 @@ INSTRUCCIONES:
 - NO menciones precios ni hagas promesas específicas de cobertura.
 - Siempre menciona "MedPlus Medicina Prepagada" al menos una vez.
 - El copy debe motivar a cotizar o conocer más sobre los planes.
-${esFechaEspecial ? '- Es una fecha especial, dale un toque emotivo y celebratorio.' : categoria === 'comparativa' ? '- Es contenido comparativo, sé directo y usa datos o contrastes para generar impacto.' : '- Es contenido educativo, enfócate en dar valor e información útil.'}
+${instruccionTipo}
 
 Responde ÚNICAMENTE con un objeto JSON con esta estructura exacta (sin backticks ni texto adicional):
 {
@@ -165,4 +151,5 @@ Responde ÚNICAMENTE con un objeto JSON con esta estructura exacta (sin backtick
   return copy;
 }
 
-module.exports = { generarCopy, getFechaImportanteEstaSemana, TEMAS_SALUD, FECHAS_IMPORTANTES };
+// FECHAS_IMPORTANTES se conserva en los exports por compatibilidad (ahora apunta a fechas.js)
+module.exports = { generarCopy, getFechaImportanteEstaSemana, TEMAS_SALUD, FECHAS_IMPORTANTES: FECHAS };
